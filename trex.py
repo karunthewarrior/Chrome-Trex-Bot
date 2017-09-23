@@ -5,7 +5,7 @@ import numpy as np
 import pyautogui
 import thread
 import os
-
+np.set_printoptions(threshold='nan')
 
 global x,y 
 
@@ -51,15 +51,18 @@ def step(prev_img,action):
 		img = np.array(sct.grab(monitor))
 		img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)     
 		ret, img = cv2.threshold(img,127,255,cv2.THRESH_BINARY)
+
 		kernel = np.ones((2,2),np.uint8)
-		# mod_img = prev_img - cv2.dilate(img,kernel,iterations = 1) 
 		mod_img = cv2.dilate(img,kernel,iterations = 1) 
+		diff_img = mod_img - prev_img
+		# mod_img = cv2.dilate(img,kernel,iterations = 1)
+		ret, diff_img = cv2.threshold(diff_img,127,255,cv2.THRESH_BINARY) 
 		cv2.imshow("image",mod_img)
+		cv2.imshow("diff", diff_img)
 		roi = img[13:37,114:141]
-
-		input_vector = img.astype(np.float).ravel()
+		input_vector = np.array(diff_img).flatten()
 		input_vector = np.where(input_vector == 255, 1, 0)
-
+		input_vector = input_vector.reshape((-1,1))
 		if(np.array_equal(roi,game_over_img)):
 			reward = -100
 			end_flag = 1
@@ -68,7 +71,7 @@ def step(prev_img,action):
 			reward = score/4
 			end_flag = 0
 
-		return input_vector, reward, end_flag
+		return input_vector, reward, end_flag, mod_img
 
 global game_over_img
 global step_count,score 
@@ -86,29 +89,30 @@ with mss.mss() as sct:
 	img = np.array(sct.grab(monitor))
 	img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)     
 	ret, img = cv2.threshold(img,127,255,cv2.THRESH_BINARY)
+
 	kernel = np.ones((2,2),np.uint8)
 	mod_img = cv2.dilate(img,kernel,iterations = 1)
 	cv2.imshow("image",mod_img)
 	roi = img[13:37,114:141]
-
-	X = img.astype(np.float).ravel()
-	X = np.where(X == 255, 1, 0)
-
+	prev_img = mod_img
 	while(1):
 		score +=1
 		# A2,A1,Z1 = forward_propagate(X)
 		# action = 1 if np.random.uniform() < A2 else 0
 		# Y = 1 if action == 1 else 0
-		X,r,end_flag = step(mod_img,0)
-		
-		cv2.setMouseCallback('image',mouseClick)
+		X,r,end_flag,new_img = step(prev_img,0)
+		prev_img = new_img
+		print r
+
+
+		# cv2.setMouseCallback('image',mouseClick)
 		if(end_flag==1):
 			time.sleep(1)
-			print "EPISODE OVER"
-			os.system("xdotool key space")               
+			print "EPISODE OVER"             
 			score = 0
 			end_flag= 0
 			num_episode+=1
+			os.system("xdotool key space")  
 
 		if cv2.waitKey(25) & 0xFF == ord('q'):
 			cv2.destroyAllWindows()                   

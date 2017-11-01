@@ -1,19 +1,18 @@
 import sys
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
 
-# from flask import Flask, render_template, request, redirect, Response
 import flask as flk
 import random, json
 import os
-# from torchRL import RLModel
-
-# for linking openCV on Mac with VENV
-# export PYTHONPATH=/usr/local/lib/python2.7/site-packages:$PYTHONPATH
+import model as m
+from time import sleep
 
 app = flk.Flask(__name__)
 count = 0
+
+obj = m.RLModel()
+y = []
 
 def dataURL2img(dataurl):
     img_b64 = dataurl.split(',')[1]
@@ -29,7 +28,6 @@ def render():
 
 @app.route('/receiver', methods = ['POST'])
 def update_game():
-    global count
     # read json and send action
     game_data = dict(flk.request.form)
 
@@ -37,15 +35,22 @@ def update_game():
     reward = float(game_data['reward'][0])
     done = game_data['state'][0] == 'true'
 
-    if (count == 0):
-        action = 'DOWN'
-    elif (count%100):
-        action = 'UP'
-    else:
-        action = 'RUNNING'
+    action = "UP"
+    x,count,all_inputs = obj.pre_process(observation)
+    if(count >1):
+        cv2.imshow("input",x.reshape(60,300)*255)
+        cv2.waitKey(1)
+        # time.sleep(1)
+        print count
 
-    count += 1
+        o = obj.forward_pass(x)
 
+        action = "UP" if np.random.uniform() < o else "RUNNING"
+        y.append(1) if action == "UP" else y.append(0)
+        # if(count == 50):
+            # loss = obj.backward_pass(all_inputs,y,r)
+
+ 
     return action
 
 if __name__ == "__main__":

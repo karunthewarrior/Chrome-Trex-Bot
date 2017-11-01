@@ -330,7 +330,7 @@ clearTimeout(id);
                 }
                 if (this.crashed && this.gameOverPanel) {
                     this.gameOverPanel.updateDimensions(this.dimensions.WIDTH);
-                    this.gameOverPanel.draw()
+                    // this.gameOverPanel.draw()
                 }
             }
         },
@@ -1521,8 +1521,8 @@ clearTimeout(id);
         },
         update: function(deltaTime, currentSpeed, updateObstacles) {
             this.runningTime += deltaTime;
-            this.horizonLine.update(deltaTime, currentSpeed);
-            this.updateClouds(deltaTime, currentSpeed);
+            // this.horizonLine.update(deltaTime, currentSpeed);
+            // this.updateClouds(deltaTime, currentSpeed);
             if (updateObstacles) {
                 this.updateObstacles(deltaTime, currentSpeed)
             }

@@ -651,7 +651,7 @@ clearTimeout(id);
             if (!this.gameOverPanel) {
                 this.gameOverPanel = new GameOverPanel(this.canvas, this.spriteDef.TEXT_SPRITE, this.spriteDef.RESTART, this.dimensions)
             } else {
-                this.gameOverPanel.draw()
+                // this.gameOverPanel.draw()
             }
             if (this.distanceRan > this.highestScore) {
                 this.highestScore = Math.ceil(this.distanceRan);
@@ -796,7 +796,7 @@ clearTimeout(id);
         this.canvasDimensions = dimensions;
         this.textImgPos = textImgPos;
         this.restartImgPos = restartImgPos;
-        this.draw()
+        // this.draw()
     };
     GameOverPanel.dimensions = {
         TEXT_X: 0,

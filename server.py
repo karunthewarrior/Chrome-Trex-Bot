@@ -1,10 +1,10 @@
 import sys
 import cv2
+import os
 import numpy as np
 
 import flask as flk
 import random, json
-import os
 import model as m
 from time import sleep
 

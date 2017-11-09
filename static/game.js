@@ -3560,9 +3560,9 @@ Horizon.prototype = {
    */
   update: function(deltaTime, currentSpeed, updateObstacles, showNightMode) {
     this.runningTime += deltaTime;
-    this.horizonLine.update(deltaTime, currentSpeed);
+    // this.horizonLine.update(deltaTime, currentSpeed);
+    // this.updateClouds(deltaTime, currentSpeed);
     this.nightMode.update(showNightMode);
-    this.updateClouds(deltaTime, currentSpeed);
 
     if (updateObstacles) {
       this.updateObstacles(deltaTime, currentSpeed);
